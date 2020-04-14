@@ -7,27 +7,34 @@ from snakemake.exceptions import WildcardError as WildcardError
 
 
 TARGET_PATHS = {
-    "INIT_COMPLETE_DATA": os.path.join(
+    "INIT_COMPLETE_DATA_NHR": os.path.join(
+        "input",
+        "{input_format}",
+        "{nhr_reads}.{file_ext}{ext_modifier}"
+    ),
+
+    "INIT_COMPLETE_DATA_HAP": os.path.join(
         "input",
         "{input_format}",
         "{hap_reads}.{file_ext}{ext_modifier}"
     ),
+
     "BUILD_NHR_ASSEMBLY": os.path.join(
         "output", "reference_assembly", "non-hap-res",
-        "{hap_reads}_nhr-{nhr_assembler}.fasta"
+        "{nhr_reads}_nhr-{nhr_assembler}.fasta"
     ),
 
     "BUILD_CLUSTERED_ASSEMBLY": os.path.join(
         "output", "reference_assembly", "clustered",
         "{sseq_reads}",
-        "{hap_reads}_scV{git_commit_version}-{nhr_assembler}.fasta",
+        "{nhr_reads}_scV{git_commit_version}-{nhr_assembler}.fasta",
     ),
 
     "BUILD_DRAFT_HAPLOID_ASSEMBLY": os.path.join(
         "output", "diploid_assembly",
         "strandseq_{hap_assm_mode}",
         "{var_caller}_QUAL{filter_vcf_qual}_GQ{filter_vcf_gq}",
-        "{hap_reads}_scV{git_commit_version}-{nhr_assembler}",
+        "{nhr_reads}_scV{git_commit_version}-{nhr_assembler}",
         "{vc_reads}",
         "{sseq_reads}",
         "draft", "haploid_assembly",
@@ -38,7 +45,7 @@ TARGET_PATHS = {
         "output", "diploid_assembly",
         "strandseq_{hap_assm_mode}",
         "{var_caller}_QUAL{filter_vcf_qual}_GQ{filter_vcf_gq}",
-        "{hap_reads}_scV{git_commit_version}-{nhr_assembler}",
+        "{nhr_reads}_scV{git_commit_version}-{nhr_assembler}",
         "{vc_reads}",
         "{sseq_reads}",
         "polishing",
@@ -51,7 +58,7 @@ TARGET_PATHS = {
         "output", "diploid_assembly",
         "strandseq_{hap_assm_mode}",
         "{var_caller}_QUAL{filter_vcf_qual}_GQ{filter_vcf_gq}",
-        "{hap_reads}_scV{git_commit_version}-{nhr_assembler}",
+        "{nhr_reads}_scV{git_commit_version}-{nhr_assembler}",
         "{vc_reads}",
         "{sseq_reads}",
         "polishing",
@@ -64,7 +71,7 @@ TARGET_PATHS = {
         "output", "evaluation", "quastlg_busco",
         "{eval_known_ref}-{eval_gene_model}",
         "reference_assembly", "non-hap-res",
-        "{hap_reads}_nhr-{nhr_assembler}/report.pdf"
+        "{nhr_reads}_nhr-{nhr_assembler}/report.pdf"
     ),
 
     "REPORT_DRAFT_HAPLOID_ASSEMBLY": os.path.join(
@@ -73,7 +80,7 @@ TARGET_PATHS = {
         "diploid_assembly",
         "strandseq_{hap_assm_mode}",
         "{var_caller}_QUAL{filter_vcf_qual}_GQ{filter_vcf_gq}",
-        "{hap_reads}_scV{git_commit_version}-{nhr_assembler}",
+        "{nhr_reads}_scV{git_commit_version}-{nhr_assembler}",
         "{vc_reads}",
         "{sseq_reads}",
         "draft", "haploid_assembly",
@@ -86,7 +93,7 @@ TARGET_PATHS = {
         "diploid_assembly",
         "strandseq_{hap_assm_mode}",
         "{var_caller}_QUAL{filter_vcf_qual}_GQ{filter_vcf_gq}",
-        "{hap_reads}_scV{git_commit_version}-{nhr_assembler}",
+        "{nhr_reads}_scV{git_commit_version}-{nhr_assembler}",
         "{vc_reads}",
         "{sseq_reads}",
         "polishing",
@@ -101,7 +108,7 @@ TARGET_PATHS = {
         "diploid_assembly",
         "strandseq_{hap_assm_mode}",
         "{var_caller}_QUAL{filter_vcf_qual}_GQ{filter_vcf_gq}",
-        "{hap_reads}_scV{git_commit_version}-{nhr_assembler}",
+        "{nhr_reads}_scV{git_commit_version}-{nhr_assembler}",
         "{vc_reads}",
         "{sseq_reads}",
         "polishing",
@@ -110,7 +117,12 @@ TARGET_PATHS = {
         "{hap_reads}-{hap_assembler}.{hap}.{pol_pass}.scV{git_commit_version}/report.pdf"
     ),
 
-    "STATS_SAMPLE_SUMMARY": os.path.join(
+    "STATS_SAMPLE_SUMMARY_NHR": os.path.join(
+        "output", "statistics", "stat_dumps",
+        "{nhr_reads}.{file_ext}.pck"
+    ),
+
+    "STATS_SAMPLE_SUMMARY_HAP": os.path.join(
         "output", "statistics", "stat_dumps",
         "{hap_reads}.{file_ext}.pck"
     ),
@@ -118,7 +130,7 @@ TARGET_PATHS = {
     "STATS_VARIANT_CALLING_INITIAL": os.path.join(
         "output", "statistics", "variant_calls",
         "{var_caller}",
-        "{hap_reads}_scV{git_commit_version}-{nhr_assembler}",
+        "{nhr_reads}_scV{git_commit_version}-{nhr_assembler}",
         "{sseq_reads}",
         "{vc_reads}.snv.QUAL{filter_vcf_qual}.vcf.stats"
     ),
@@ -126,7 +138,7 @@ TARGET_PATHS = {
     "STATS_VARIANT_CALLING": os.path.join(
         "output", "statistics", "variant_calls",
         "{var_caller}",
-        "{hap_reads}_scV{git_commit_version}-{nhr_assembler}",
+        "{nhr_reads}_scV{git_commit_version}-{nhr_assembler}",
         "{sseq_reads}",
         "{vc_reads}.snv.QUAL{filter_vcf_qual}.GQ{filter_vcf_gq}.vcf.stats"
     ),
@@ -134,7 +146,7 @@ TARGET_PATHS = {
     "STATS_STRANDPHASER": os.path.join(
         "output", "statistics", "phasing",
         "{var_caller}_QUAL{filter_vcf_qual}_GQ{filter_vcf_gq}",
-        "{hap_reads}_scV{git_commit_version}-{nhr_assembler}",
+        "{nhr_reads}_scV{git_commit_version}-{nhr_assembler}",
         "{vc_reads}",
         "{sseq_reads}",
         "{hap_reads}.spr-phased.stats.tsv"
@@ -143,7 +155,7 @@ TARGET_PATHS = {
     "STATS_INTEGRATIVE_PHASING": os.path.join(
         "output", "statistics", "phasing",
         "{var_caller}_QUAL{filter_vcf_qual}_GQ{filter_vcf_gq}",
-        "{hap_reads}_scV{git_commit_version}-{nhr_assembler}",
+        "{nhr_reads}_scV{git_commit_version}-{nhr_assembler}",
         "{vc_reads}",
         "{sseq_reads}",
         "{hap_reads}.wh-phased.stats.tsv"
@@ -152,13 +164,18 @@ TARGET_PATHS = {
     "STATS_READ_HAPLO_TAGGING": os.path.join(
         "output", "statistics", "tag_split",
         "{var_caller}_QUAL{filter_vcf_qual}_GQ{filter_vcf_gq}",
-        "{hap_reads}_scV{git_commit_version}-{nhr_assembler}",
+        "{nhr_reads}_scV{git_commit_version}-{nhr_assembler}",
         "{vc_reads}",
         "{sseq_reads}",
         "{hap_reads}.tags.{tag_source}.tsv"
     ),
 
-    "PLOT_INPUT_SAMPLE_STATS": os.path.join(
+    "PLOT_INPUT_SAMPLE_STATS_NHR": os.path.join(
+        "output", "plotting", "statistics", "input_reads",
+        "{nhr_reads}.{file_ext}.stats.pdf"
+    ),
+
+    "PLOT_INPUT_SAMPLE_STATS_HAP": os.path.join(
         "output", "plotting", "statistics", "input_reads",
         "{hap_reads}.{file_ext}.stats.pdf"
     ),
@@ -166,20 +183,20 @@ TARGET_PATHS = {
     "PLOT_SAARCLUST_DIAG_ASSEMBLY_CLUSTERING": os.path.join(
         "output", "plotting", "saarclust_diagnostics", "reference_assembly", "clustered",
         "{sseq_reads}",
-        "{hap_reads}_scV{git_commit_version}-{nhr_assembler}_map-to_{eval_align_ref}.clustering.pdf",
+        "{nhr_reads}_scV{git_commit_version}-{nhr_assembler}_map-to_{eval_align_ref}.clustering.pdf",
     ),
 
     "PLOT_SAARCLUST_DIAG_ASSEMBLY_ORIENTING": os.path.join(
         "output", "plotting", "saarclust_diagnostics", "reference_assembly", "clustered",
         "{sseq_reads}",
-        "{hap_reads}_scV{git_commit_version}-{nhr_assembler}_map-to_{eval_align_ref}.orienting.pdf",
+        "{nhr_reads}_scV{git_commit_version}-{nhr_assembler}_map-to_{eval_align_ref}.orienting.pdf",
     ),
 
     "PLOT_SAARCLUST_DIAG_HAPLOID_ASSEMBLY_CLUSTERING": os.path.join(
         "output", "plotting", "saarclust_diagnostics", "diploid_assembly",
         "strandseq_{hap_assm_mode}",
         "{var_caller}_QUAL{filter_vcf_qual}_GQ{filter_vcf_gq}",
-        "{hap_reads}_scV{git_commit_version}-{nhr_assembler}",
+        "{nhr_reads}_scV{git_commit_version}-{nhr_assembler}",
         "{vc_reads}",
         "{sseq_reads}",
         "polishing",
@@ -192,7 +209,7 @@ TARGET_PATHS = {
         "output", "plotting", "saarclust_diagnostics", "diploid_assembly",
         "strandseq_{hap_assm_mode}",
         "{var_caller}_QUAL{filter_vcf_qual}_GQ{filter_vcf_gq}",
-        "{hap_reads}_scV{git_commit_version}-{nhr_assembler}",
+        "{nhr_reads}_scV{git_commit_version}-{nhr_assembler}",
         "{vc_reads}",
         "{sseq_reads}",
         "polishing",
@@ -205,7 +222,7 @@ TARGET_PATHS = {
         "output", "plotting", "saarclust_diagnostics", "diploid_assembly",
         "strandseq_{hap_assm_mode}",
         "{var_caller}_QUAL{filter_vcf_qual}_GQ{filter_vcf_gq}",
-        "{hap_reads}_scV{git_commit_version}-{nhr_assembler}",
+        "{nhr_reads}_scV{git_commit_version}-{nhr_assembler}",
         "{vc_reads}",
         "{sseq_reads}",
         "polishing",
@@ -428,6 +445,15 @@ def define_file_targets(wildcards):
                             # additional info such as _1000
                             tmp.update(annotation)
                             break
+                # same for nhr readset
+                if '{nhr_reads}' in target_path:
+                    nhr_readset = tmp['nhr_reads']
+                    for readset, annotation in readset_annotation.items():
+                        if nhr_readset.startswith(readset):
+                            # prefix-matching because the actual readset likely carries
+                            # additional info such as _1000
+                            tmp.update(annotation)
+                            break
                 try:
                     complete_targets = expand(target_path, **tmp)
                 except (KeyError, WildcardError) as error:
@@ -441,7 +467,7 @@ def define_file_targets(wildcards):
                                                'exploded string instead of list: {}'.format(complete_targets)
                         file_targets.append(entry)
 
-    file_targets = sorted(file_targets)
+    file_targets = sorted(set(file_targets))
 
     return file_targets
 
